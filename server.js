@@ -1,26 +1,29 @@
-const express = require('express');
-const morgan = require('morgan');
-const mongoose = require('mongoose');
+const express = require("express");
+const logger = require("morgan");
+const mongoose = require("mongoose");
+const compression = require("compression");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(morgan('dev'));
+app.use(logger("dev"));
 
+app.use(compression());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static('public'));
+
+app.use(express.static("public"));
 
 var MONGODB_URI =
-    process.env.MONGODB_URI || 'mongodb://localhost/tranquil-ridge-18150';
+    process.env.MONGODB_URI || 'mongodb://localhost/PWAHW';
 mongoose.connect(MONGODB_URI, {
     useNewUrlParser: true,
     useFindAndModify: false,
 });
 
-require('./routes/apiRoutes')(app);
-require('./routes/htmlRoutes')(app);
+// routes
+app.use(require("./routes/api.js"));
 
-app.listen(PORT, function () {
-    console.log(`App listening on Port ${PORT}`);
+app.listen(PORT, () => {
+    console.log(`App running on port ${PORT}!`);
 });
